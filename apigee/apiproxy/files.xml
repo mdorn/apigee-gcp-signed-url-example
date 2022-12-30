@@ -1,0 +1,27 @@
+<APIProxy revision="29" name="files">
+    <DisplayName></DisplayName>
+    <Description></Description>
+    <CreatedAt>1672417075802</CreatedAt>
+    <LastModifiedAt>1672417145654</LastModifiedAt>
+    <BasePaths>/files/v1</BasePaths>
+    <Policies>
+        <Policy>RF-404</Policy>
+        <Policy>EV-GetURL</Policy>
+        <Policy>AM-MockBackendResponse</Policy>
+        <Policy>JS-SetTargetServiceURL</Policy>
+        <Policy>SC-GetSignedUrl</Policy>
+        <Policy>AM-DownloadRedirect</Policy>
+        <Policy>OA-VerifyAccessToken</Policy>
+        <Policy>AM-RemoveHeaderAuthz</Policy>
+    </Policies>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources>
+        <Resource>properties://props.properties</Resource>
+        <Resource>jsc://setTargetServiceURL.js</Resource>
+    </Resources>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

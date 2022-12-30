@@ -1,0 +1,6 @@
+# Python
+env/
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
