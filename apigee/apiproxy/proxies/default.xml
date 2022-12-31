@@ -57,7 +57,7 @@
         <Response/>
     </PostFlow>
     <HTTPProxyConnection>
-        <BasePath>/files/v1</BasePath>
+        <BasePath>/signed/v1</BasePath>
     </HTTPProxyConnection>
     <RouteRule name="NoTarget"/>
 </ProxyEndpoint>

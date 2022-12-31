@@ -1,9 +1,9 @@
-<APIProxy revision="29" name="files">
+<APIProxy revision="1" name="apigee-signed-url-example">
     <DisplayName></DisplayName>
     <Description></Description>
     <CreatedAt>1672417075802</CreatedAt>
     <LastModifiedAt>1672417145654</LastModifiedAt>
-    <BasePaths>/files/v1</BasePaths>
+    <BasePaths>/signed/v1</BasePaths>
     <Policies>
         <Policy>RF-404</Policy>
         <Policy>EV-GetURL</Policy>

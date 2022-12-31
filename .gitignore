@@ -1,6 +1,14 @@
 # Python
 env/
+__pycache__/
+*.py[cod]
+
 # Terraform
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+variable.tfvars
+
+# Other
+apigee/resources/properties/props.properties
+assets/apigee-signedurl-example.zip

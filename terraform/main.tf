@@ -12,21 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "org_id" {
-  default = "299810056172"
+variable "region" {
+  type = string
 }
 
 variable "project_id" {
-  default = "apigeex-sandbox-mdorn"
-}
-
-variable "region" {
-  default = "us-central1"
+  type = string
 }
 
 provider "google" {
   region = "${var.region}"
-  project = "apigeex-sandbox-mdorn"
+  project = "${var.project_id}"
 }
 
 resource "google_project_iam_custom_role" "role" {
@@ -72,14 +68,14 @@ resource "google_storage_bucket_iam_binding" "binding" {
 
 resource "google_storage_bucket_object" "example_file" {
   name   = "fake_invoice.pdf"
-  source = "../fake_invoice.pdf"
+  source = "../assets/fake_invoice.pdf"
   bucket = google_storage_bucket.bucket.name
 }
 
 resource "google_storage_bucket_object" "function_source" {
   name   = "function-source.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "../function-source.zip"  # Add path to the zipped function source code
+  source = "../assets/function-source.zip"  # Add path to the zipped function source code
 }
 
 resource "google_cloudfunctions2_function" "function" {
