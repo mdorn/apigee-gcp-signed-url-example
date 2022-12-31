@@ -1,13 +1,13 @@
 # Copyright 2020 Google LLC
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the 'License');
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
+# distributed under the License is distributed on an 'AS IS' BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
@@ -33,8 +33,8 @@ def get_url(request):
     # Get the default credential on the current environment
     credentials, project_id = google.auth.default()
     # Refresh request to get the access token 
-    r = requests.Request()
-    credentials.refresh(r)
+    req = requests.Request()
+    credentials.refresh(req)
     # Create storage object to sign
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
@@ -43,13 +43,15 @@ def get_url(request):
     # specify service account only for local development, deployment will use
     #   the assigned service account
     service_account_email = os.environ.get('SVC_ACCT', None)
-    if hasattr(credentials, "service_account_email"):
+    if hasattr(credentials, 'service_account_email'):
         service_account_email = credentials.service_account_email
     url = blob.generate_signed_url(
         expiration=expires,
         service_account_email=service_account_email, 
-        access_token=credentials.token)
-    data = {"data": url}
+        access_token=credentials.token,
+        method='GET'
+        )
+    data = {'data': url}
     return json.dumps(data)
 
 

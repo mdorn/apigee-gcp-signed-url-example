@@ -2,6 +2,6 @@
 <AssignMessage continueOnError="false" enabled="true" name="AM-MockBackendResponse">
     <DisplayName>AM-MockBackendResponse</DisplayName>
     <Set>
-        <Payload contentType="application/json">{"id": "1", "title": "Example invoice", "file": "/fake_invoice.pdf"}</Payload>
+        <Payload contentType="application/json">{"id": "1", "title": "Example invoice", "file": "fake_invoice.pdf"}</Payload>
     </Set>
 </AssignMessage>

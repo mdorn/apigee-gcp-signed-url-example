@@ -29,7 +29,7 @@ resource "google_project_iam_custom_role" "role" {
   role_id     = "ApigeeSignedURLRole"
   title       = "Apigee Signed URL Role"
   description = ""
-  permissions = ["storage.buckets.get", "storage.objects.create", "storage.objects.delete", "storage.objects.get"]
+  permissions = ["storage.buckets.get", "storage.objects.create", "storage.objects.delete", "storage.objects.get", "iam.serviceAccounts.signBlob"]
 }
 
 resource "google_service_account" "service_account" {
