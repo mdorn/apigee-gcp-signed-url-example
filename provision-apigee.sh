@@ -21,8 +21,8 @@ printf "bucket=$BUCKET\nfunction_url=$FUNCTION_URI" > 'apigee/apiproxy/resources
 # zip up apigee directory and POST it to apigee
 (cd apigee && zip -r ../assets/apigee-signedurl-example.zip .)
 # Set up Apigee proxies
-curl -X POST "$MGMT_HOST/v1/organizations/$APIGEE_PROJECT_ID/apis?action=import&name=apigee-signedurl-example" \
+curl -X POST "$APIGEE_MGMT_HOST/v1/organizations/$APIGEE_PROJECT_ID/apis?action=import&name=apigee-signedurl-example" \
         -H "Authorization: Bearer $TOKEN" --form file=@"assets/apigee-signedurl-example.zip"
 # Deploy proxy
-curl -X POST "$MGMT_HOST/v1/organizations/$APIGEE_PROJECT_ID/environments/$APIGEE_ENV/apis/apigee-signedurl-example/revisions/1/deployments" \
+curl -X POST "$APIGEE_MGMT_HOST/v1/organizations/$APIGEE_PROJECT_ID/environments/$APIGEE_ENV/apis/apigee-signedurl-example/revisions/1/deployments" \
          -H "Authorization: Bearer ${TOKEN}"

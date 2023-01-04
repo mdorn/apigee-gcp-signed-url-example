@@ -1,6 +1,6 @@
 # Signed URLs on GCP with Apigee
 
-This article describes an approach to using signed URLs for large files in conjunction with an API-centric application managed by Apigee, and is accompanied by [a repo](https://github.com/mdorn/apigee-gcp-signed-url-example) that deploys the relevant Google Cloud resources, including a Cloud Function responsible for the signing.
+This article describes an approach to using signed URLs for large files in conjunction with an API-centric application managed by Apigee, and is accompanied by [a repo](https://github.com/mdorn/apigee-gcp-signed-url-example) that deploys the relevant Google Cloud resources, including a Cloud Function responsible for signing URLs.
 
 ## Why signed URLs?
 
@@ -18,11 +18,11 @@ In the implementation described below and available in [this repo](https://githu
 
 To help you explore the solution proposed here, I've provided a [repo](https://github.com/mdorn/apigee-gcp-signed-url-example) with Terraform code that deploys the following resources:
 
-* A service account with a binding to a custom IAM role that enables the service account to generate a signed URL and also read and write from a storage bucket.
-* A Cloud Storage bucket without public access enabled, and an IAM binding that gives access to the service account. The bucket also includes an example file that can be downloaded with a signed URL.
-* A Cloud Function, written in Python, that signs the URL based on supplied bucket and object parameters, and an IAM binding that gives the service account the Cloud Run invoker role. (It's a 2nd generation Cloud Function, and is thus based on [Cloud Run and Eventarc](https://cloud.google.com/functions/docs/concepts/version-comparison).)
+* A **service account** with a binding to a custom IAM role that enables the service account to generate a signed URL and also read and write from a storage bucket.
+* A **Cloud Storage bucket** without public access enabled, and an IAM binding that gives access to the service account. The bucket also includes an example file that can be downloaded with a signed URL.
+* A **Cloud Function**, written in Python, that signs the URL based on supplied bucket and object parameters, and an IAM binding that gives the service account the Cloud Run invoker role. (It's a 2nd generation Cloud Function, and is thus based on [Cloud Run and Eventarc](https://cloud.google.com/functions/docs/concepts/version-comparison).)
 
-Two additional scripts deploy a proxy to your Apigee X environment showing how you might implement the solution in conjunction with Apigee.
+Two additional scripts deploy a proxy to an existing Apigee X environment showing how you might implement the solution in conjunction with Apigee.
 
 See the [`README`](https://github.com/mdorn/apigee-gcp-signed-url-example/blob/main/README.md) in the repo for deployment instructions and prerequisites.
 
@@ -40,26 +40,32 @@ and the JSON response looks like this:
 {"id": "1", "title": "Example invoice", "file": "fake_invoice.pdf"}
 ```
 
-A subsequent call to sign the URL via the `/signed/v1/download` endpoint and redirect the client to download the file then takes place:
+The client can then make a subsequent call to sign the URL via the `/signed/v1/download` endpoint, which also redirects the client to download the specified file:
 
 ```sh
-curl -L "https://34.117.156.38.nip.io/signed/v1/download?file=$FILE" --output example.pdf
+curl -L "https://34.117.156.38.nip.io/signed/v1/download?file=fake_invoice.pdf" --output example.pdf
 ```
 
-Here a Service Callout invokes the Cloud Function URL, which returns a time-constrained URL that looks like this:
+Here an Apigee [Service Callout](https://cloud.google.com/apigee/docs/api-platform/reference/policies/service-callout-policy) invokes the Cloud Function URL, which returns a time-constrained URL that looks like this:
 
 ```
 https://storage.googleapis.com/apigee-signedurl-bucket-0ed14900/fake_invoice.pdf?Expires=1672517695&GoogleAccessId=apigee-signedurl-svc-acct%40my-gcp-project.iam.gserviceaccount.com&Signature=51B19lC7KSfdFRxqvniBepAspKRJFRxKTb0rhY%2FG9pIaXtijWS1eIij5cS%2BIOtORvFqpOn08B77mGa9VBvRjM83h%2FHylA7WudhbDQ%2BHMPyPI451EwLsSjz137nCQ%2Fb%2BORtN9%2FSo%2BYc7tOAp9JWOyEfrMyHtyGIiWcZL1cZUAg5Y%2B2RnDQH5YUzre3WpuquEFdRcakxboHvFgEi9nQJtAUltaXdt8pTdDkVe%2FHoXb43mkq4YCa37aKh7YaNGOgJcJNFls%2BrhRxQHvD0M7qSWYYsgU%2FXI1R6YyVMutaVgQbxlKcrvyQTW%2BrAvW1cC3LoYJrqEZcyslJPthJq%2FcUUFERQ%3D%3D
 ```
 
-And the proxy flow finally issues the redirect to the URL for the download.
+And the proxy flow finally issues the redirect to the URL for the download.  (If you run the above curl command with the `-v` verbose flag you'll be able to see the URL that gets generated before the redirect takes place.)
 
 ## Additional security considerations
 
 > **DISCLAIMER**: This discussion is not intended to be exhaustive, but merely to point in the direction of some considerations to ensure the security of this solution. In a future iteration of this article I may delve into these matters in more detail.
 
-**Securing the URL**: Once the URL has been signed, anyone in possession of it will have access to the object, to either `GET` or `PUT` a file, depending on what you've specified in the signing process.  The example Apigee proxy includes an OAuth 2.0 token validation policy which is disabled for demo simplification, but which is there to serve as a reminder that it's up to the API developer to ensure that the signing function itself is only invoked in response to an action by an authenticated user, with data supplied by a properly secured interaction.  Beyond that, at a minimum, HTTPS should always be used to encrypt the URL in transit, and an appropriate expiration time be set to render the URL worthless shortly after it's used.  In our implementation [5 minutes is specified](https://github.com/mdorn/apigee-gcp-signed-url-example/blob/main/cloud_function/main.py#L42).
+**Securing the URL**: Once the URL has been signed, anyone in possession of it will have access to the object, to either `GET` or `PUT` a file, depending on what you've specified in the signing process.  The example Apigee proxy includes an OAuth 2.0 token validation policy which is disabled for demo simplification, but which is there to serve as a reminder that it's up to the API developer to ensure that the signing function itself is only invoked in response to an action by an authenticated user, with data supplied by a properly secured interaction.
+
+A few additional considerations include:
+
+* HTTPS should always be used to encrypt the URL in transit
+* An appropriate expiration time be set to render the URL worthless shortly after it's used.  In our implementation [5 minutes is specified](https://github.com/mdorn/apigee-gcp-signed-url-example/blob/main/cloud_function/main.py#L42).
+* Consider naming storage objects with unique identifiers that can't be guessed by an attacker who may have gained access to the signing function and can thus manipulate its input.
 
 **IAM and least privilege**: As indicated in the description of provisioned resources above, we have attempted to scope service account permissions in such a way that the account only has the minimum level of access needed to perform the core functions: accessing specific storage buckets, invoking a Cloud Function, and generating a URL signature when that function is invoked.  Also as noted, doing this in a way that doesn't require managing a private key is a security bonus.
 
-**Networking**: In this implementation, the Cloud Function runs at a publicly accessible URL.  In a real-world implementation you would most likely want to serve it behind an internal load balancer where it can only be accessed by an Apigee instance where, for instance, appropriate VPC peering relationships have been defined. For more, consult [this guide](https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-l7-internal-serverless) in the Cloud Load Balancing documentation.
+**Networking**: In this implementation, the Cloud Function runs at a publicly accessible URL.  In a real-world implementation you would most likely want to serve it behind an internal load balancer where it can only be accessed by an Apigee instance with which, for instance, appropriate VPC peering relationships have been defined. For more, consult [this guide](https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-l7-internal-serverless) in the Cloud Load Balancing documentation.

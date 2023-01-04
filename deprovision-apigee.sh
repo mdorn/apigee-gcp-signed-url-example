@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # Undeploy proxy
-curl -X DELETE "${MGMT_HOST}/v1/organizations/$APIGEE_PROJECT_ID/environments/$APIGEE_ENV/apis/apigee-signedurl-example/revisions/1/deployments" \
+curl -X DELETE "${APIGEE_MGMT_HOST}/v1/organizations/$APIGEE_PROJECT_ID/environments/$APIGEE_ENV/apis/apigee-signedurl-example/revisions/1/deployments" \
     -H "Authorization: Bearer ${TOKEN}"
 # Delete
-curl -H "Authorization: Bearer ${TOKEN}" -X DELETE "${MGMT_HOST}/v1/organizations/${APIGEE_PROJECT_ID}/apis/apigee-signedurl-example"
+curl -H "Authorization: Bearer ${TOKEN}" -X DELETE "${APIGEE_MGMT_HOST}/v1/organizations/${APIGEE_PROJECT_ID}/apis/apigee-signedurl-example"

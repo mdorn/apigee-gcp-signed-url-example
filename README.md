@@ -17,28 +17,29 @@ This repo is the companion to the Google Cloud Community article "[Signed URLs o
 # Ensure you're authenticated with your GCP account and working in the context of your active project.
 
 # Set environment variables
-export TF_VAR_project_id=my-project-id  # GCP project
+export TF_VAR_project_id=my-project-id  # Your GCP project
 export TF_VAR_region=us-central1
 export TOKEN=$(gcloud auth print-access-token)
-export APIGEE_PROJECT_ID=my-project-id  # Apigee org
+export APIGEE_PROJECT_ID=my-project-id  # Your apigee org
 export APIGEE_ENV=eval
-export RUNTIME_HOST=https://1.2.3.4.nip.io  # Apigee runtime hostname
-export MGMT_HOST=https://apigee.googleapis.com  # Apigee X APIs
+export APIGEE_MGMT_HOST=https://apigee.googleapis.com  # Apigee X APIs
+export APIGEE_RUNTIME_HOST=https://1.2.3.4.nip.io  # Your Apigee runtime hostname
 
 # Provision resources
 terraform -chdir=terraform init
 terraform -chdir=terraform plan
 terraform -chdir=terraform apply
 ./provision-apigee.sh
+# NOTE: it may take a few minutes to deploy the first revision of the proxy before you can use it.
 ```
 
 ### Usage
 
 ```bash
 # get file info from API call
-curl -X GET "$RUNTIME_HOST/signed/v1/file/1"
+curl -X GET "$APIGEE_RUNTIME_HOST/signed/v1/file/1"
 # get file from output: {"id": "1", "title": "Example invoice", "file": "fake_invoice.pdf"} ane make call to download API
-curl -X GET -L "$RUNTIME_HOST/signed/v1/download?file=fake_invoice.pdf" --output example.pdf
+curl -X GET -L "$APIGEE_RUNTIME_HOST/signed/v1/download?file=fake_invoice.pdf" --output example.pdf
 # open downloaded example.pdf in PDF viewer
 ```
 
