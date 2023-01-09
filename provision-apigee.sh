@@ -16,9 +16,11 @@
 
 BUCKET="$(terraform -chdir=terraform output -raw bucket)"
 FUNCTION_URI="$(terraform -chdir=terraform output -raw function_uri)"
-# write Terraform output vars to apigee/apiproxy/resources/properties/props.properties
+# write Terraform output vars to Apigee properties
 printf "bucket=$BUCKET\nfunction_url=$FUNCTION_URI" > 'apigee/apiproxy/resources/properties/props.properties'
 # zip up apigee directory and POST it to apigee
+rm -f assets/apigee-signedurl-example.zip
+rm -f apigee/apiproxy/resources/properties/.placeholder
 (cd apigee && zip -r ../assets/apigee-signedurl-example.zip .)
 # Set up Apigee proxies
 curl -X POST "$APIGEE_MGMT_HOST/v1/organizations/$APIGEE_PROJECT_ID/apis?action=import&name=apigee-signedurl-example" \
