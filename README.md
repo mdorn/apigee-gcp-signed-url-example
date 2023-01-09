@@ -1,6 +1,6 @@
 # Apigee/GCP Signed URL Example
 
-This repo is the companion to the Google Cloud Community article "[Signed URLs on GCP with Apigee](https://www.googlecloudcommunity.com/gc/Cloud-Product-Articles/Signed-URLs-on-GCP-with-Apigee/ta-p/505017)".
+This repo is the companion to the Google Cloud Community article "[Signed URLs on GCP with Apigee](https://www.googlecloudcommunity.com/gc/Cloud-Product-Articles/Signed-URLs-on-GCP-with-Apigee/ta-p/508273)".
 
 
 ## Prerequisites
